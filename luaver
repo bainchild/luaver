@@ -543,14 +543,12 @@ __luaver_install_luajit()
 {
     local version=$1
     local luajit_dir_name="LuaJIT-${version}"
-    local archive_name="${luajit_dir_name}.tar.gz"
-    local url="http://luajit.org/download/${archive_name}"
 
     __luaver_print "Installing ${luajit_dir_name}"
 
     __luaver_exec_command cd "${__luaver_SRC_DIR}"
 
-    __luaver_download_and_unpack "${luajit_dir_name}" "${archive_name}" "${url}"
+    __luaver_exec_command git clone --branch "${version}" https://github.com/LuaJIT/LuaJIT.git "${luajit_dir_name}"
 
     __luaver_exec_command cd "${luajit_dir_name}"
 
@@ -638,14 +636,15 @@ __luaver_list_luajit()
 {
     if [ "x$1" = "x-r" ]
     then
-        __luaver_get_url "http://luajit.org/download.html" |
-        'awk' '/MD5 Checksums/,/<\/pre/ { print }' |
-        'awk' '/LuaJIT.*gz/ { print $2 }' |
-        'sed' -e s/LuaJIT-// -e s/\.tar\.gz// |
-        # Sort semver with 'beta'
-        'sed' -e s/-beta/.beta./ |
-        'sort' -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4r -k 5,5n -r |
-        'sed' -e s/.beta./-beta/
+        # __luaver_get_url "http://luajit.org/download.html" |
+        # 'awk' '/MD5 Checksums/,/<\/pre/ { print }' |
+        # 'awk' '/LuaJIT.*gz/ { print $2 }' |
+        # 'sed' -e s/LuaJIT-// -e s/\.tar\.gz// |
+        # # Sort semver with 'beta'
+        # 'sed' -e s/-beta/.beta./ |
+        # 'sort' -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4r -k 5,5n -r |
+        # 'sed' -e s/.beta./-beta/
+        __luaver_print "This command is deprecated. Luajit now uses rolling releases, and listing all of the commits would be less than desirable."
     else
         __luaver_print "Installed versions: (currently $(__luaver_get_current_luajit_version || echo none))"
         'find' "${__luaver_LUAJIT_DIR}" -name '*.*' -prune | 'awk' -F/ '{ print $NF }'
